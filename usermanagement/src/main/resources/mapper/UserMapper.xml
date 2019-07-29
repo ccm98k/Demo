@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyrj.usermanagement.dao.UserMapper">
+
+    <resultMap id="WithMemberMap" type="com.zyrj.usermanagement.domain.User">
+        <id column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="username" />
+        <result column="user_nickname" jdbcType="VARCHAR" property="nickname" />
+        <result column="user_password" jdbcType="VARCHAR" property="password" />
+        <result column="user_gender" jdbcType="CHAR" property="gender" />
+        <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+        <result column="grade_id" jdbcType="INTEGER" property="gradeId" />
+        <association property="member" javaType="com.zyrj.usermanagement.domain.Member">
+            <id column="grade_id" jdbcType="INTEGER" property="gradeId"></id>
+            <result column="member_type" jdbcType="VARCHAR" property="memberType"></result>
+        </association>
+    </resultMap>
+    <select id="findAll" resultMap="WithMemberMap">
+        select
+        u.user_id,u.user_name,u.user_password,u.user_nickname,u.birthday,u.user_gender,u.telephone,u.email,u.grade_id,m.member_type
+        FROM user_info u left JOIN member_info m on u.grade_id=m.grade_id ORDER BY u.user_id ASC
+    </select>
+
+    <select id="countUser" resultType="java.lang.Integer" parameterType="String">
+        select
+        count(*)
+        FROM user_info where
+        user_name='${value}'
+    </select>
+
+    <insert id="savaUser" parameterType="com.zyrj.usermanagement.domain.User" >
+        insert into user_info (user_name,user_password,user_nickname,birthday,user_gender,telephone,email,grade_id)
+         VALUES (#{username},#{password},#{nickname},#{birthday},#{gender},#{telephone},#{email},#{gradeId})
+    </insert>
+
+    <select id="findById" parameterType="Integer" resultMap="WithMemberMap">
+        select
+        *
+        FROM user_info where
+        user_id=#{id}
+    </select>
+
+
+    <update id="updateUser" parameterType="com.zyrj.usermanagement.domain.User">
+        update user_info
+        set
+        birthday=#{birthday},
+        user_gender=#{gender},
+        email=#{email},
+        telephone=#{telephone},
+        grade_id=#{gradeId}
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteUserById" parameterType="java.lang.Integer">
+        delete from user_info where user_id=#{id}
+    </delete>
+
+    <delete id="deleteUserByList" parameterType="java.util.List">
+        DELETE FROM user_info WHERE user_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+
+    <select id="findByusername" parameterType="java.lang.String" resultMap="WithMemberMap">
+        select
+        *
+        FROM user_info where
+        user_name='${value}'
+    </select>
+
+    <update id="savePassword" parameterType="com.zyrj.usermanagement.domain.User">
+        update user_info
+        set
+        user_password=#{password}
+        where user_name = #{username}
+    </update>
+
+</mapper>

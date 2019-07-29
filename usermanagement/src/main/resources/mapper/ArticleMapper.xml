@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyrj.usermanagement.dao.ArticleMapper">
+
+
+    <resultMap id="WithContentCategoryMap" type="com.zyrj.usermanagement.domain.Article">
+        <id column="id" jdbcType="INTEGER" property="articleId" />
+        <result column="auther" jdbcType="VARCHAR" property="auther" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="summary" jdbcType="VARCHAR" property="summary" />
+        <result column="create_by" jdbcType="VARCHAR" property="createTime" />
+        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <association property="category" javaType="com.zyrj.usermanagement.domain.Category">
+            <id column="category_id" jdbcType="INTEGER" property="categoryId"></id>
+            <result column="category" jdbcType="VARCHAR" property="categoryType"></result>
+        </association>
+        <association property="articleContent" javaType="com.zyrj.usermanagement.domain.ArticleContent">
+            <id column="content_id" jdbcType="INTEGER" property="contentId"></id>
+            <result column="content" jdbcType="VARCHAR" property="content"></result>
+            <result column="article_id" jdbcType="VARCHAR" property="articleId"></result>
+        </association>
+    </resultMap>
+
+
+    <insert id="saveArticle" parameterType="com.zyrj.usermanagement.domain.Article" >
+        insert into article_info (auther,title,summary,create_by,category_id)
+         VALUES (#{auther},#{title},#{summary},#{createTime},#{categoryId})
+        <selectKey resultType="int" keyProperty="articleId" order="AFTER">
+            select @@identity
+        </selectKey>
+    </insert>
+
+    <insert id="saveArticleContent" parameterType="com.zyrj.usermanagement.domain.ArticleContent" >
+        insert into article_content (content,article_id)
+         VALUES (#{content},#{articleId})
+    </insert>
+
+    <select id="findArticle" parameterType="java.lang.String" resultMap="WithContentCategoryMap">
+        select
+        *
+        FROM article_info where auther='${value}' ORDER BY create_by DESC
+    </select>
+
+    <select id="findAllArticle" resultMap="WithContentCategoryMap">
+        select
+        *
+        FROM article_info ORDER BY create_by DESC
+    </select>
+
+
+</mapper>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人博客</title>
+    <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/wangEditor.js"></script>
+    <link href="/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/bootstrap-3.3.7-dist/css/contain.css" rel="stylesheet">
+    <script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+</head>
+
+<body>
+
+<div>
+    <div class="col-md-12 container-fluid">
+
+        <div class="row">
+            <nav class="navbar navbar-default ">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav pagechange" >
+                            <li class="active" id="home"><a href="#">Personal Blog</a></li>
+                            <li id="edit_blog"><a>编辑博客</a></li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li id="perInfo"></li>
+                            <li><a>exit</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div class="row contend">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="row" style="padding: 50px 0 0 0">
+                        <div class="row col-md-8 col-md-offset-1">
+                            <input  class="form-control">
+                        </div>
+                        <div class="col-md-offset-4">
+                            <button class="btn btn-default" >搜索</button>
+                        </div>
+                    </div>
+                    <div class="divider" style="margin-top: 30px"><HR align=center color=#987cb9 SIZE=1></div>
+                    <div class="row col-md-12" style="margin: auto">
+                        <ul class="list-group" id="category_nev">
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-9" >
+                    <div class="row">
+                        <table id="article_table">
+                            <thead><tr></tr></thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-offset-5" id="page_nav">
+
+                        </div>
+                    </div>
+                    <div class="row" style="height:300px"></div>
+                </div>
+            </div>
+            <div class="row col-md-offset-2" id="release_page">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <h3>编辑博客</h3>
+                    </div>
+                    <div class="form-group">
+                        <div  style="width:30%">
+                            <span>标题</span>
+                            <input type="text" class="form-control" name="title" id="title_input" aria-describedby="sizing-addon1">
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <div style="width:30%">
+                            <span>类别</span>
+                            <select class="form-control" name="categoryId" id="category_input">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row" style="width:55%;padding-left: 15px" id="editor">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="blog_release">发布</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var editor;
+    var category;
+    $(function () {
+        $(".contend>div").eq(0).show().siblings().hide();
+        get_category("#category_input");
+        navigation_load();
+
+        article_load(1);
+
+        var E = window.wangEditor;
+        editor = new E('#editor');
+        editor.create();
+
+
+
+    });
+
+    function article_load(ele) {
+        $.ajax({
+            url:"Admin/article",
+            type:"GET",
+            data:"pn="+ele,
+            success:function (result) {
+                console.log(result);
+                article_load_content(result);
+                article_load_nav(result);
+                category_load(category);
+            }
+        });
+    }
+
+    function article_load_content(ele) {
+
+        $("#article_table tbody").empty();
+        var articles= ele.extend.Articles.list;
+        $.each(articles,function (index,item) {
+            var titleT= $("<h3></h3>").append(item.title);
+            var summaryT= $("<p></p>").append(item.summary);
+
+            var articleAllT=$("<a style=\"float: left;\" href=\"#\">阅读全文>></a>").addClass("articleAll") .attr("articleId",item.articleId);
+
+            var dateT=$(" <small style=\"float: right;\"></small>").append(item.createTime);
+
+            var art_dateT=$("<div class=\"look\" style=\"width: 100%\"></div>").append(articleAllT).append(dateT);
+            var dividerT=$("<div class=\"divider\" style=\"margin-top: 30px\"><HR align=center color=#987cb9 SIZE=1></div>");
+            $("<div class=\"article\"></div>").append(titleT).append(summaryT).append(art_dateT).append(dividerT).appendTo("#article_table tbody");
+        });
+    }
+    function article_load_nav(result) {
+
+        $('#page_nav').empty();
+        var url=$("<ul></ul>").addClass("pagination");
+
+        var firstpage=$("<li></li>").append($("<a></a>").attr("href","#").append("首页"));
+
+        var prepage=$("<li></li>").append($("<a></a>").append("&laquo;"));
+
+        if(result.extend.Articles.isFirstPage){
+            firstpage.addClass("disabled");
+            url.append(firstpage);
+        }else{
+            url.append(firstpage);
+            url.append(prepage);
+        }
+
+
+        $.each(result.extend.Articles.navigatepageNums,function (index,item) {
+            var page=$("<li></li>").append($("<a></a>").append(item));
+            if(result.extend.Articles.pageNum==item){
+                page.addClass("active");
+            }
+            page.click(function () {
+                article_load(item);
+            });
+            url.append(page);
+        })
+        var nextpage=$("<li></li>").append($("<a></a>").append("&raquo;"));
+        var lastpage=$("<li></li>").append($("<a></a>").attr("href","#").append("末页"));
+        if(result.extend.Articles.isLastPage){
+            lastpage.addClass("disabled");
+
+        }else{
+            url.append(nextpage);
+        }
+        url.append(lastpage);
+        var nav=$("<nav></nav>").append(url);
+        nav.appendTo("#page_nav");
+
+        firstpage.click(function () {
+            article_load(result.extend.Articles.firstPage);
+        });
+        prepage.click(function () {
+            article_load(result.extend.Articles.prePage);
+        });
+
+        nextpage.click(function () {
+            article_load(result.extend.Articles.nextPage);
+        });
+        lastpage.click(function () {
+            article_load(result.extend.Articles.lastPage);
+        });
+    }
+
+    function category_load(ele) {
+        $("#category_nev").empty();
+        $.each(ele,function (index,item) {
+            var categoryT= $("<li class=\"list-group-item\"></li>").append($("<a></a>").append(item.categoryType)).attr("categoryId",item.categoryId);
+            categoryT.click(function () {
+
+            });
+            categoryT.appendTo("#category_nev");
+        });
+    }
+    
+    function get_category(ele){
+        $(ele).empty();
+        $.ajax({
+            url:"Admin/category",
+            type:"GET",
+            success:function(result) {
+                category=result.extend.categories;
+                $.each(result.extend.categories,function () {
+                    var optionT=$("<option></option>").append(this.categoryType).attr("value",this.categoryId);
+                    optionT.appendTo(ele);
+                });
+            }
+        });
+    }
+
+    function navigation_load(){
+        $("<a></a>").append($.cookie('username')).appendTo("#perInfo");
+    }
+
+    $("#perInfo").click(function () {
+        alert("123");
+        //这里可以修改自己的信息
+    });
+
+    $(".pagechange>li").click(function () {
+        $(this).addClass("active").siblings().removeClass("active");
+        var index = $(this).index();
+        $(".contend>div").eq(index).show().siblings().hide();
+    });
+
+    //发表博客
+    $("#blog_release").click(function () {
+
+        $.ajax({
+            url:"Admin/article",
+            type:"POST",
+            data:{
+                auther:$.cookie('username'),
+                summary:editor.txt.text().substring(0,200),
+                title:$("#title_input").val(),
+                categoryId:$("#category_input").val(),
+                content:editor.txt.html()
+            },
+            success:function (result) {
+                alert("发布成功");
+                window.location.href="Admin";
+            }
+        });
+    });
+
+
+
+    $(document).on("click",".articleAll",function () {
+
+        window.location.href="Admin/articles?id="+$(this).attr("articleId");
+
+    });
+
+
+
+
+
+    
+    
+</script>
+
+
+
+
+
+</body>
+</html>

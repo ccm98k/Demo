@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理模块</title>
+    <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+    <link href="/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/datepicker/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="/datepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+</head>
+<body>
+
+<div class="modal fade" id="adduserModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">添加用户</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group ">
+                        <label  class="col-sm-2 control-label">账户</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="username" id="username_input" placeholder="name">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label  class="col-sm-2 control-label">姓名</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="nickname" id="nickname_input" >
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label  class="col-sm-2 control-label">生日</label>
+                        <div class='col-sm-8'>
+                                <input type='text' class="form-control" name="birthday" id="birthday_input" />
+                                <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">联系方式</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="telephone" id="telephone_input" placeholder="11位手机号码">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="email" id="email_input" placeholder="email@xxx.com">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">性别</label>
+                        <div class="col-sm-8">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender_input1" value="M" checked="checked"> 男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender_input2" value="F"> 女
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">会员类型</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="gradeId" id="member_select">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="user_save_btn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateuserModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">修改用户</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group ">
+                        <label  class="col-sm-2 control-label">账户</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static" id="username_update"></p>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label  class="col-sm-2 control-label">姓名</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static" id="nickname_update"></p>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">生日</label>
+                        <div class='col-sm-8'>
+                            <input type='text' class="form-control" name="birthday" id="birthday_update" />
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">联系方式</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="telephone" id="telephone_update" placeholder="11位手机号码">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="email" id="email_update" placeholder="email@xxx.com">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">性别</label>
+                        <div class="col-sm-8">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender_update1" value="M" checked="checked"> 男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender_update2" value="F"> 女
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">会员类型</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="gradeId" id="depts_update">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="user_update_btn">更新</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" >
+    <div class="row"><div class="col-md-12"><h1>用户管理</h1></div></div>
+    <div class="row">
+        <div class="col-md-4 col-md-offset-8">
+            <button class="btn btn-primary" id="add_user_modal">新增</button>
+            <button class="btn btn-danger" id="delete_user_all">删除</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table" id="emps_table">
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="check_all">
+                    </th>
+                    <th>#</th>
+                    <th>用户名</th>
+                    <th>用户昵称</th>
+                    <th>年龄</th>
+                    <th>性别</th>
+                    <th>手机</th>
+                    <th>邮箱</th>
+                    <th>会员类别</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" id="page_info"></div>
+        <div class="col-md-6" id="page_nav">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //select页面查询加载
+    $(function () {
+        to_page(1);
+
+        $('#birthday_input').datetimepicker({
+            language:"zh-CN",
+            format: 'yyyy-mm-dd',
+            minView:'month',
+            language: 'zh-CN',
+            endDate:new Date(),
+            autoclose:true,
+        });
+        $('#birthday_update').datetimepicker({
+            language:"zh-CN",
+            format: 'yyyy-mm-dd',
+            minView:'month',
+            language: 'zh-CN',
+            endDate:new Date(),
+            autoclose:true,
+        });
+    });
+    function to_page(pn) {
+        $.ajax({
+            url:"users",
+            data:"pn="+pn,
+            type:"GET",
+            success:function(result) {
+                console.log(result);
+                build_emps_table(result);
+                build_page_info(result);
+                build_page_nav(result);
+            }
+        });
+    }
+    function build_emps_table(result) {
+        $("#emps_table tbody").empty();
+        var emps=result.extend.PageInfo.list;
+        $.each(emps,function (index,item) {
+            var checkboxT=$("<td></td>").append($("<input type='checkbox' class='check_item'></input>"));
+            var userIdT=$("<td></td>").append(item.userId);
+            var usernameT=$("<td></td>").append(item.username);
+            var nicknameT=$("<td></td>").append(item.nickname);
+            var date=new Date();
+            var birthday=new Date(item.birthday);
+            var age=Math.ceil((date-birthday) / 1000 / 60 / 60 / 24 /365);
+            var ageT=$("<td></td>").append(age);
+            var genderT=$("<td></td>").append(item.gender=="M"?"男":"女");
+            var telephoneT=$("<td></td>").append(item.telephone);
+            var emailT=$("<td></td>").append(item.email);
+            var memberT=$("<td></td>").append(item.member.memberType);
+            var Editbtn=$("<button></button>").addClass("btn btn-primary edit_btn").append($("<apan></apan>").append("修改"));
+            Editbtn.attr("edit-id",item.userId);
+            var Delbtn=$("<button></button>").addClass("btn btn-danger delete_btn").append($("<apan></apan>").append("删除"));
+            Delbtn.attr("delete-id",item.userId);
+            var btnT=$("<td></td>").append(Editbtn).append(" ").append(Delbtn);
+            $("<tr></tr>").append(checkboxT).append(userIdT).append(usernameT).append(nicknameT).append(ageT)
+                .append(genderT).append(telephoneT).append(emailT).append(memberT).append(btnT).appendTo("#emps_table tbody");
+        });
+    }
+    function build_page_info(result) {
+        $('#page_info').empty();
+        var pageNumT=result.extend.PageInfo.pageNum;
+        var pagesT=result.extend.PageInfo.pages;
+        var totalT=result.extend.PageInfo.total;
+        $('#page_info').append("当前页：").append(pageNumT).append(",总页：").append(pagesT).append(",记录条数:").append(totalT);
+        currentNum=pageNumT;
+    }
+    function build_page_nav(result) {
+        $('#page_nav').empty();
+        var url=$("<ul></ul>").addClass("pagination");
+
+        var firstpage=$("<li></li>").append($("<a></a>").attr("href","#").append("首页"));
+
+        var prepage=$("<li></li>").append($("<a></a>").append("&laquo;"));
+        url.append(firstpage);
+        if(result.extend.PageInfo.isFirstPage){
+            firstpage.addClass("disabled");
+
+        }else{
+            url.append(prepage);
+        }
+
+        $.each(result.extend.PageInfo.navigatepageNums,function (index,item) {
+            var page=$("<li></li>").append($("<a></a>").append(item));
+            if(result.extend.PageInfo.pageNum==item){
+                page.addClass("active");
+            }
+            page.click(function () {
+                to_page(item);
+            });
+            url.append(page);
+        })
+        var nextpage=$("<li></li>").append($("<a></a>").append("&raquo;"));
+        var lastpage=$("<li></li>").append($("<a></a>").attr("href","#").append("末页"));
+        if(result.extend.PageInfo.isLastPage){
+            lastpage.addClass("disabled");
+
+        }else{
+            url.append(nextpage);
+        }
+        url.append(lastpage);
+        var nav=$("<nav></nav>").append(url);
+        nav.appendTo("#page_nav");
+
+        firstpage.click(function () {
+            to_page(1);
+        });
+        prepage.click(function () {
+            to_page(result.extend.PageInfo.prePage);
+        });
+
+        nextpage.click(function () {
+            to_page(result.extend.PageInfo.nextPage);
+        });
+        lastpage.click(function () {
+            to_page(result.extend.PageInfo.pages);
+        });
+    }
+
+    //add模态窗
+    $("#add_user_modal").click(function () {
+        reset_form("#adduserModel form");
+        get_members("#member_select");
+        $("#adduserModel").modal({
+            backdrop:"static",
+        });
+    });
+    function reset_form(ele){
+        $(ele)[0].reset();
+        $(ele).find("*").removeClass("has-success has-error");
+        $(ele).find(".help-block").text("");
+    }
+    function get_members(ele){
+        $(ele).empty();
+        $.ajax({
+            url:"members",
+            type:"GET",
+            success:function(result) {
+                $.each(result.extend.members,function () {
+                    var optionT=$("<option></option>").append(this.memberType).attr("value",this.gradeId);
+                    optionT.appendTo(ele);
+                });
+            }
+        });
+    }
+    function show_validata_msg(ele,status,msg){
+        $(ele).parent().remove("has-success has-error");
+        $(ele).next("span").text("");
+        if("success"==status){
+            $(ele).parent().addClass("has-success");
+            $(ele).next("span").text(msg);
+        }else{
+            $(ele).parent().addClass("has-error");
+            $(ele).next("span").text(msg);
+        }
+    }
+    function validata_add_form(){
+
+        var checknum=1;
+        var nickname=$("#nickname_input").val();
+        var regName=/^(?:[\u4e00-\u9fa5]+)(?:·[\u4e00-\u9fa5]+)*$|^[a-zA-Z0-9]+\s?[\.·\-()a-zA-Z]*[a-zA-Z]+$/;
+        if(!regName.test(nickname)){
+            show_validata_msg("#nickname_input","error","姓名格式不正确");
+            checknum=0;
+        }else{
+            show_validata_msg("#nickname_input","success","")
+        }
+
+        var birthday=$("#birthday_input").val();
+        if(birthday==""){
+            show_validata_msg("#birthday_input","error","时间不为空");
+            checknum=0;
+        }else{
+            show_validata_msg("#birthday_input","success","")
+        }
+
+        var telephone=$("#telephone_input").val();
+        var regTelephone=/^1[3456789]\d{9}$/;
+        if(!regTelephone.test(telephone)){
+            show_validata_msg("#telephone_input","error","手机格式不正确");
+            checknum=0;
+        }else{
+            show_validata_msg("#telephone_input","success","")
+        }
+
+        var email=$("#email_input").val();
+        var regEmail=/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+        if(!regEmail.test(email)){
+            show_validata_msg("#email_input","error","邮箱格式不正确");
+            checknum=0;
+        }else{
+            show_validata_msg("#email_input","success","")
+        }
+        if (checknum==0){
+            return false;
+        }
+        return true;
+    }
+    $("#user_save_btn").click(function () {
+        //前端校验
+        if(!validata_add_form()){
+            return false;
+        }
+        if($(this).attr("ajax-va")=="error"){
+            return false;
+        }
+     //   alert($("#adduserModel form").serialize());
+        $.ajax({
+            url:"user",
+            type:"POST",
+            data:$("#adduserModel form").serialize(),
+            success:function (result) {
+                if(result.code==100){
+                    $('#adduserModel').modal('hide');
+                }else{
+                    if(undefined!=result.extend.errorFields.email){
+                        show_validata_msg("#email_input","error",result.extend.errorFields.email);
+                    }
+                    if(undefined!=result.extend.errorFields.telephone){
+                        show_validata_msg("#elephone_input","error",result.extend.errorFields.telephone);
+                    }
+                    if(undefined!=result.extend.errorFields.username){
+                        show_validata_msg("#empName_input","error",result.extend.errorFields.username);
+                    }
+                }
+            }
+        });
+    });
+    $("#username_input").change(function (){
+        var username= $("#username_input").val();
+        var regName=/^[a-zA-Z0-9_-]{6,16}$/;
+        if(!regName.test(username)){
+            show_validata_msg("#username_input","error","用户名为6-16位字母或数字");
+        }else{
+            $("#username_input").next("span").text("");
+            $.ajax({
+                url:"checkName",
+                data:"username="+this.value,
+                type:"GET",
+                success:function(result) {
+                    if(result.code==100){
+                        show_validata_msg("#username_input","success","账户名可用");
+                        $("#user_save_btn").attr("ajax-va","success");
+                    }else{
+                        show_validata_msg("#username_input","error",result.extend.va_msg);
+                        $("#user_save_btn").attr("ajax-va","error");
+                    }
+                }
+            });
+        }
+    });
+
+    //update模态窗
+    $(document).on("click",".edit_btn",function () {
+        get_members("#depts_update");
+        getUser($(this).attr("edit-id"));
+        $("#user_update_btn").attr("edit-id",$(this).attr("edit-id"));
+        $("#updateuserModel").modal({
+            backdrop:"static",
+        });
+    });
+    function getUser(id) {
+        $.ajax({
+            url:"user/"+id,
+            type:"GET",
+            success:function (result) {
+                var userdata=result.extend.user;
+                $("#username_update").text(userdata.username);
+                $("#nickname_update").text(userdata.nickname);
+                $("#birthday_update").val(userdata.birthday.substring(0,10));
+                $("#telephone_update").val(userdata.telephone);
+                $("#email_update").val(userdata.email);
+                $("#updateuserModel input[type=radio]").val([userdata.gender]);
+                $("#updateuserModel select").val([userdata.gradeId]);
+            }
+        })
+    }
+    $("#user_update_btn").click(function () {
+        var telephone=$("#telephone_update").val();
+        var regtelephone=/^1[3456789]\d{9}$/;
+        if(!regtelephone.test(telephone)){
+            show_validata_msg("#telephone_update","error","手机格式不正确");
+            return false;
+        }else{
+            show_validata_msg("#telephone_update","success","");
+        }
+
+        var Email=$("#email_update").val();
+        var regEmail=/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+        if(!regEmail.test(Email)){
+            show_validata_msg("#email_update","error","邮箱格式不正确");
+            return false;
+        }else{
+            show_validata_msg("#email_update","success","");
+        }
+
+        $.ajax({
+            url:"user/"+$(this).attr("edit-id"),
+            type:"PUT",
+            data:$("#updateuserModel form").serialize(),
+            success:function (result) {
+                $("#updateuserModel").modal("hide");
+                to_page(currentNum);
+            }
+        });
+    });
+
+    //delete
+    $(document).on("click",".delete_btn",function () {
+        var name= $(this).parents("tr").find("td:eq(2)").text();
+        if(confirm("确认删除用户："+name+"吗？")){
+            $.ajax({
+                url:"user/"+$(this).attr("delete-id"),
+                type:"DELETE",
+                success:function () {
+                    to_page(currentNum);
+                }
+            });
+        }
+    });
+    $("#check_all").click(function () {
+        $(".check_item").prop("checked",$(this).prop("checked"));
+    });
+    $(document).on("click",".check_item",function () {
+        var flag=  $(".check_item:checked").length==$(".check_item").length
+        $("#check_all").prop("checked",flag);
+    });
+    $("#delete_user_all").click(function () {
+        var userNames="";
+        var userIds="";
+        $.each( $(".check_item:checked"),function () {
+            userNames+=$(this).parents("tr").find("td:eq(2)").text()+",";
+            userIds+=$(this).parents("tr").find("td:eq(1)").text()+"-";
+        });
+        userNames=userNames.substring(0,userNames.length-1);
+        userIds=userIds.substring(0,userIds.length-1);
+        if(confirm("确认删除员工："+userNames+"吗？")){
+            $.ajax({
+                url:"user/"+userIds,
+                type:"DELETE",
+                success:function () {
+                    to_page(currentNum);
+                }
+            });
+        }
+    });
+
+
+
+
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

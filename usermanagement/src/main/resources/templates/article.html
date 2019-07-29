@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文章详情</title>
+    <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/wangEditor.js"></script>
+    <link href="/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/bootstrap-3.3.7-dist/css/contain.css" rel="stylesheet">
+    <script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+</head>
+<body>
+
+
+
+<div>
+    <div class="col-md-12 container-fluid">
+        <div class="row">
+            <nav class="navbar navbar-default ">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav" >
+                        <li class="active" id="home"><a href="#">Personal Blog</a></li>
+                    </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li id="perInfo"></li>
+                            <li><a>exit</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div class="row contend">
+            <div class="row">
+                <div class="col-md-9" >
+                    <article>
+
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var id;
+    $(function () {
+        id = $.getUrlParam('id');
+        navigation_load();
+
+
+    });
+    $.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
+    function navigation_load(){
+        $("<a></a>").append($.cookie('username')).appendTo("#perInfo");
+    }
+
+
+
+
+
+</script>
+
+</body>
+</html>
