@@ -9,6 +9,9 @@ import java.util.List;
  * @date 14:47
  */
 public class Comment {
+
+
+    private Integer floor;
     private Integer commentId;
     @NotBlank
     private String comment;
@@ -16,6 +19,30 @@ public class Comment {
     private Integer commentator;
     private Integer article_id;
     private Integer parent_id;
+    private Integer agree;
+    private User user;
+    public Integer getAgree() {
+        return agree;
+    }
+
+    public void setAgree(Integer agree) {
+        this.agree = agree;
+    }
+
+    public Integer getFloor() {
+        return floor;
+    }
+
+    public void setFloor(Integer floor) {
+        this.floor = floor;
+    }
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @Override
     public String toString() {
@@ -26,6 +53,8 @@ public class Comment {
                 ", commentator=" + commentator +
                 ", article_id=" + article_id +
                 ", parent_id=" + parent_id +
+                ", agree=" + agree +
+                ", user=" + user +
                 '}';
     }
 

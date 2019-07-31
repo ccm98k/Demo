@@ -1,10 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zyrj.usermanagement.dao.CommentMapper">
+    <resultMap id="commentAndUser" type="com.zyrj.usermanagement.domain.Comment">
+        <id column="id" jdbcType="INTEGER" property="commentId" />
+        <result column="comment" jdbcType="VARCHAR" property="comment" />
+        <result column="create_by" jdbcType="VARCHAR" property="create_by" />
+        <result column="commentator" jdbcType="VARCHAR" property="commentator" />
+        <result column="article_id" jdbcType="INTEGER" property="article_id" />
+        <result column="parent_id" jdbcType="INTEGER" property="parent_id" />
+        <result column="agree" jdbcType="INTEGER" property="agree" />
+        <association property="user" javaType="com.zyrj.usermanagement.domain.User">
+            <id column="user_id" jdbcType="INTEGER" property="userId" />
+            <result column="user_name" jdbcType="VARCHAR" property="username" />
+            <result column="user_nickname" jdbcType="VARCHAR" property="nickname" />
+            <result column="user_password" jdbcType="VARCHAR" property="password" />
+            <result column="user_gender" jdbcType="CHAR" property="gender" />
+            <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+            <result column="email" jdbcType="VARCHAR" property="email" />
+            <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+            <result column="grade_id" jdbcType="INTEGER" property="gradeId" />
+        </association>
+    </resultMap>
 
     <insert id="saveComment" parameterType="com.zyrj.usermanagement.service.CommentService" >
-        insert into comment_info (comment,create_by,commentator,article_id,parent_id)
-        VALUES (#{comment},#{create_by},#{commentator},#{article_id},#{parent_id})
+        insert into comment_info (comment,create_by,commentator,article_id,parent_id,agree)
+        VALUES (#{comment},#{create_by},#{commentator},#{article_id},#{parent_id},#{agree})
     </insert>
+
+    <select id="findComments" parameterType="java.lang.Integer" resultMap="commentAndUser">
+        select ci.id,ci.comment,ci.create_by,ci.agree,ci.commentator,ci.article_id,ci.parent_id,ui.user_id,ui.user_name,ui.user_nickname
+        from comment_info ci,user_info ui
+        where ci.commentator=ui.user_id and ci.article_id=#{id} ORDER BY create_by DESC
+    </select>
+
+    <delete id="deleteCommentById" parameterType="java.lang.Integer">
+        delete from comment_info where id=#{id}
+    </delete>
+
+    <update id="updateCommentById" parameterType="java.lang.Integer">
+        update comment_info set agree = agree + 1 where id=#{id}
+    </update>
+
 
 </mapper>

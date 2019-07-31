@@ -4,6 +4,8 @@ import com.zyrj.usermanagement.domain.Comment;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @auther ccm
  * @date 15:03
@@ -14,4 +16,9 @@ public interface CommentMapper {
 
     void saveComment(Comment comment);
 
+    List<Comment> findComments(Integer id);
+
+    void deleteCommentById(Integer id);
+
+    void updateCommentById(Integer id);
 }

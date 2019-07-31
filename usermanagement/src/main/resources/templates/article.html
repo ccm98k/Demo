@@ -73,6 +73,15 @@
 
                         <div class="divider"><HR align=center color=#987cb9 SIZE=1></div>
 
+                        <div class="row" id="comment_title">
+
+                        </div>
+                        <div class="row" id="comment_content">
+
+                        </div>
+                        <div class="row" id="comment_nav">
+
+                        </div>
                 </div>
             </div>
         </div>
@@ -81,14 +90,15 @@
 
 <script type="text/javascript">
 
-
+    var id;
+    var current_comment=1;
     $(function () {
         navigation_load();
 
-        var id = $.getUrlParam('id');
+        id = $.getUrlParam('id');
 
         article_load(id);
-        Comment_load(id);
+        Comment_load(1);
     });
     $.getUrlParam = function (name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -122,8 +132,99 @@
 
     function Comment_load(ele){
         //加载评论，分页显示
+        current_comment=ele;
         $.ajax({
+            url:"comments/"+id,
+            type:"GET",
+            data:"pn="+ele,
+            success:function (result) {
+                Comment_load_content(result.extend.comments);
+                Comment_load_nav(result.extend.comments);
+            }
+        });
+    }
 
+    function Comment_load_content(ele){
+        $('#comment_content').empty();
+
+        $('#comment_title').empty();
+        if(parseInt(ele.total)>0){
+            var titleT=$("<h3></h3>").append("评论");
+            $("#comment_title").append(titleT);
+        }else{
+            return false;
+        }
+        var num=(ele.pageNum-1)*ele.pageSize;
+        var total=ele.total;
+
+        $.each(ele.list,function () {
+            var floor=total-num;
+            if(parseInt($.cookie('userid'))==parseInt(this.commentator)){
+                var deleteT=$("<a style=\'cursor:pointer;\'></a>").append("删除").addClass("delete_a");
+                deleteT.attr("comment_id",this.commentId);
+                var agreeT=$("<text></text>").append("赞").append("("+this.agree+")");
+                var coAuthAndDateT=$("<p></p>").append("#"+floor+"&emsp;"+this.user.nickname+"&emsp;"+this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
+            }else{
+                var deleteT=$("<text></text>").append("删除");
+                var agreeT=$("<a style=\'cursor:pointer;\'></a>").addClass("agree_a").append("赞").append("("+this.agree+")");
+                agreeT.attr("comment_id",this.commentId);
+                var coAuthAndDateT=$("<p></p>").append("#"+floor+"&emsp;"+this.user.nickname+"&emsp;"+this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
+            }
+            var comment_textT;
+            var nickname;
+            if(parseInt(this.parent_id)>0){
+                $.ajax({
+                   url:"comment/"+this.parent_id,
+                   type:"GET",
+                   async:false,
+                   success:function (result) {
+
+
+                   }
+                });
+                comment_textT=$("<article></article>").append("&emsp;&emsp;&emsp;").append("回复"+nickname).append("&emsp;").append(this.comment);
+            }else{
+                comment_textT=$("<article></article>").append("&emsp;&emsp;&emsp;").append(this.comment);
+            }
+
+            var dividerT=$("<div class=\"divider\"><HR align=center color=#987cb9 SIZE=1></div>");
+            $("#comment_content").append(coAuthAndDateT).append(comment_textT).append(dividerT);
+            num++;
+        });
+    }
+
+    function Comment_load_nav(ele){
+        $('#comment_nav').empty();
+        var url=$("<ul></ul>").addClass("pagination");
+
+        var prepage=$("<li></li>").append($("<a></a>").append("&laquo;"));
+
+        if(ele.isFirstPage){
+            prepage.addClass("disabled");
+
+        }else {
+            url.append(prepage);
+        }
+
+
+        var nextpage=$("<li></li>").append($("<a></a>").append("&raquo;"));
+
+        if(ele.isLastPage){
+            nextpage.addClass("disabled");
+        }else{
+            url.append(nextpage);
+        }
+
+        var nav=$("<nav></nav>").append(url);
+        nav.appendTo("#comment_nav");
+
+        prepage.click(function (e) {
+            Comment_load(ele.prePage);
+
+        });
+
+        nextpage.click(function () {
+            Comment_load(ele.nextPage);
         });
     }
 
@@ -145,6 +246,7 @@
             success:function (result) {
                 if(result.code==100){
                     alert("发布成功");
+                    $("#comment_textarea").val("");
                     location.reload();
                 }else{
                     alert(result.extend.errorFields);
@@ -153,6 +255,29 @@
         })
     });
 
+    $(document).on("click",".delete_a",function () {
+        if(confirm("确认删除？")){
+            $.ajax({
+                url:"comment/"+$(this).attr("comment_id"),
+                type:"DELETE",
+                success:function (result) {
+                    Comment_load(current_comment);
+                }
+            });
+        }
+    });
+
+
+    $(document).on("click",".agree_a",function () {
+
+            $.ajax({
+                url:"comment/"+$(this).attr("comment_id"),
+                type:"PATCH",
+                success:function (result) {
+                    Comment_load(current_comment);
+                }
+            });
+    });
 
 
 

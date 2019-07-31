@@ -5,6 +5,8 @@ import com.zyrj.usermanagement.domain.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @auther ccm
  * @date 15:00
@@ -17,5 +19,17 @@ public class CommentService {
 
         commentMapper.saveComment(comment);
 
+    }
+
+    public List<Comment> findComments(Integer id) {
+        return commentMapper.findComments(id);
+    }
+
+    public void deleteCommentById(Integer id) {
+        commentMapper.deleteCommentById(id);
+    }
+
+    public void updateCommentById(Integer id) {
+        commentMapper.updateCommentById(id);
     }
 }

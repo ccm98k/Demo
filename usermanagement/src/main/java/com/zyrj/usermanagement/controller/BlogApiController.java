@@ -2,14 +2,12 @@ package com.zyrj.usermanagement.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zyrj.usermanagement.domain.Article;
-import com.zyrj.usermanagement.domain.Category;
-import com.zyrj.usermanagement.domain.Comment;
-import com.zyrj.usermanagement.domain.Msg;
+import com.zyrj.usermanagement.domain.*;
 import com.zyrj.usermanagement.service.ArticleService;
 import com.zyrj.usermanagement.service.CategoryService;
 
 import com.zyrj.usermanagement.service.CommentService;
+import com.zyrj.usermanagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -37,6 +35,7 @@ public class BlogApiController {
     CategoryService categoryService;
     @Autowired
     CommentService commentService;
+
 
     @RequestMapping(value = "article/list",method = RequestMethod.GET)
     @ResponseBody
@@ -87,8 +86,50 @@ public class BlogApiController {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateStr = format.format(date);
         comment.setCreate_by(dateStr);
+        comment.setAgree(0);
         commentService.saveComment(comment);
         return new Msg().success();
     }
+
+    @RequestMapping(value = "comments/{id}",method = RequestMethod.GET)
+    @ResponseBody
+    public Msg findComments(@PathVariable("id") Integer id,@RequestParam(value = "pn",defaultValue = "1") Integer pn){
+        PageHelper.startPage(pn,10);
+        List<Comment> comments=commentService.findComments(id);
+        PageInfo page=new PageInfo(comments,3);
+        int maxpage=page.getPages();
+        if(pn<=maxpage){
+            return new Msg().success().add("comments",page);
+        }else{
+            PageHelper.startPage(maxpage,10);
+            comments=commentService.findComments(id);
+            page=new PageInfo(comments,3);
+            return new Msg().success().add("comments",page);
+        }
+
+    }
+
+    @RequestMapping(value = "comment/{id}",method = RequestMethod.DELETE)
+    @ResponseBody
+    public Msg deleteCommentById(@PathVariable("id") Integer id){
+        commentService.deleteCommentById(id);
+        return new Msg().success();
+    }
+
+    @RequestMapping(value = "comment/{id}",method = RequestMethod.PATCH)
+    @ResponseBody
+    public Msg updateCommentById(@PathVariable("id") Integer id){
+        commentService.updateCommentById(id);
+        return new Msg().success();
+    }
+
+    @RequestMapping(value = "comment/{id}",method = RequestMethod.GET)
+    @ResponseBody
+    public Integer findCommentById(@PathVariable("id")Integer id){
+
+
+        return 1;
+    }
+
 
 }
