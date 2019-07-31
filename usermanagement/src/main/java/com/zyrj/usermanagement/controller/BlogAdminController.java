@@ -61,7 +61,7 @@ public class BlogAdminController {
         return new Msg().success();
     }
 
-    @RequestMapping(value = "article",method = RequestMethod.GET)
+    @RequestMapping(value = "articles",method = RequestMethod.GET)
     @ResponseBody
     public Msg findArticle(@RequestParam(value = "pn",defaultValue = "1")Integer pn,@CookieValue("username") String auther){
         PageHelper.startPage(pn,6);

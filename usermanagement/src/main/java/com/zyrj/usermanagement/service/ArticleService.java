@@ -36,4 +36,8 @@ public class ArticleService {
     public List<Article> findAllArticle() {
         return articleMapper.findAllArticle();
     }
+
+    public Article findArticleById(Integer id) {
+        return articleMapper.findArticleById(id);
+    }
 }

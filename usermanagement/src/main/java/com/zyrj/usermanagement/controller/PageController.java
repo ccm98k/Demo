@@ -26,10 +26,10 @@ public class PageController {
     @GetMapping("/Admin")
     public String adminPage(){ return "adminBlog";}
 
-    @GetMapping("Admin/articles")
-    public String articlePage(){ return "article"; }
-
     @GetMapping("/index")
     public String indexPage(){ return "index"; }
+
+    @GetMapping("api/article")
+    public String articleDetail(){ return "article"; }
 
 }

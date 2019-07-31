@@ -22,4 +22,6 @@ public interface ArticleMapper {
     List<Article> findArticle(String auther);
 
     List<Article> findAllArticle();
+
+    Article findArticleById(Integer id);
 }

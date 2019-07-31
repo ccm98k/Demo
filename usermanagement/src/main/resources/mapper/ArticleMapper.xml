@@ -47,5 +47,13 @@
         FROM article_info ORDER BY create_by DESC
     </select>
 
+    <select id="findArticleById" parameterType="java.lang.Integer" resultMap="WithContentCategoryMap">
+        select
+        ai.*,ac.*
+        FROM article_info ai,article_content ac where ai.id=ac.article_id and ai.id=#{id}
+    </select>
+
+
+
 
 </mapper>

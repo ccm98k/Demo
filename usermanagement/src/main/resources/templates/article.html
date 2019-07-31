@@ -9,6 +9,21 @@
     <link href="/bootstrap-3.3.7-dist/css/contain.css" rel="stylesheet">
     <script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <style>
+        #btn_submit{
+            float: right;
+
+        }
+        #box{
+            width: 99%;
+            margin: auto;
+        }
+        textarea{
+            width: 100%;
+            border:1px solid rgba(41, 96, 67, 0.25);;
+            height: 100px;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,7 +36,7 @@
                 <div class="container-fluid">
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav" >
-                        <li class="active" id="home"><a href="#">Personal Blog</a></li>
+                        <li class="active" id="home"><a href="#">Blog Detail</a></li>
                     </ul>
 
                         <ul class="nav navbar-nav navbar-right">
@@ -34,10 +49,30 @@
         </div>
         <div class="row contend">
             <div class="row">
-                <div class="col-md-9" >
-                    <article>
+                <div class="col-md-2">
 
-                    </article>
+                </div>
+                <div class="col-md-9" >
+
+                        <div class="row" id="title_div" style="text-align:center">
+
+                        </div>
+                        <div class="row" id="auther_date" style="text-align:center">
+
+                        </div>
+                        <div>
+                            <article id="article_art">
+
+                            </article>
+                        </div>
+                        <div class="divider"><HR align=center color=#987cb9 SIZE=1></div>
+                        <div class="row" id="box">
+                            <textarea id="comment_textarea"></textarea>
+                            <button class="btn" id="btn_submit">发布</button>
+                        </div>
+
+                        <div class="divider"><HR align=center color=#987cb9 SIZE=1></div>
+
                 </div>
             </div>
         </div>
@@ -45,12 +80,15 @@
 </div>
 
 <script type="text/javascript">
-    var id;
+
+
     $(function () {
-        id = $.getUrlParam('id');
         navigation_load();
 
+        var id = $.getUrlParam('id');
 
+        article_load(id);
+        Comment_load(id);
     });
     $.getUrlParam = function (name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -62,6 +100,58 @@
         $("<a></a>").append($.cookie('username')).appendTo("#perInfo");
     }
 
+    function article_load(ele) {
+        $.ajax({
+            url:"article/"+ele,
+            type:"GET",
+            success:function (result) {
+                article_load_content(result.extend.article);
+            }
+        });
+
+    }
+
+    function article_load_content(ele){
+        var titleT=$("<h1></h1>").addClass("titleId").append(ele.title);
+        $("#title_div").append(titleT);
+        titleT.attr("articleId",ele.articleId);
+        var autherDateT=$("<small></small>").append("作者: "+ ele.auther).append("&nbsp;&nbsp;&nbsp;&nbsp;").append(ele.createTime);
+        $("#auther_date").append(autherDateT);
+        $("#article_art").append(ele.articleContent.content);
+    }
+
+    function Comment_load(ele){
+        //加载评论，分页显示
+        $.ajax({
+
+        });
+    }
+
+    $("#btn_submit").click(function () {
+        var comment_text= $("#comment_textarea").val();
+        if(comment_text.length<10){
+            alert("请至少输入10个字符");
+            return false;
+        }
+        $.ajax({
+            url:"comment",
+            type:"POST",
+            data:{
+                comment:comment_text,
+                commentator:$.cookie('userid'),
+                article_id:$(".titleId").attr("articleId"),
+                parent_id:0,
+            },
+            success:function (result) {
+                if(result.code==100){
+                    alert("发布成功");
+                    location.reload();
+                }else{
+                    alert(result.extend.errorFields);
+                }
+            }
+        })
+    });
 
 
 

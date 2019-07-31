@@ -114,6 +114,7 @@
                 }else{
                     var userInfo=result.extend.userInfo;
                     $.cookie('username', userInfo.username);
+                    $.cookie('userid', userInfo.userId);
                     window.location.href="index";
                 }
             }
@@ -167,6 +168,7 @@
                 if(result.code==100){
                     var userInfo=result.extend.userInfo;
                     $.cookie('username', userInfo.username);
+                    $.cookie('userid', userInfo.userId);
                     window.location.href="index";
                 }else{
                     show_validata_msg("#password_set","error","输入错误！");
