@@ -125,10 +125,10 @@ public class BlogApiController {
 
     @RequestMapping(value = "comment/{id}",method = RequestMethod.GET)
     @ResponseBody
-    public Integer findCommentById(@PathVariable("id")Integer id){
+    public Integer findFloorById(@PathVariable("id")Integer id,Integer article_id){
 
 
-        return 1;
+        return commentService.findFloorById(id,article_id);
     }
 
 

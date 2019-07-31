@@ -3,6 +3,7 @@
 <mapper namespace="com.zyrj.usermanagement.dao.CommentMapper">
     <resultMap id="commentAndUser" type="com.zyrj.usermanagement.domain.Comment">
         <id column="id" jdbcType="INTEGER" property="commentId" />
+        <result column="rk" jdbcType="INTEGER" property="floor" />
         <result column="comment" jdbcType="VARCHAR" property="comment" />
         <result column="create_by" jdbcType="VARCHAR" property="create_by" />
         <result column="commentator" jdbcType="VARCHAR" property="commentator" />
@@ -41,5 +42,14 @@
         update comment_info set agree = agree + 1 where id=#{id}
     </update>
 
+    <select id="findFloorById" parameterType="java.lang.Integer" resultMap="commentAndUser">
+        select row_number() over (order by create_by desc) rk ,ci.id,ci.comment,ci.commentator,ci.article_id,ci.parent_id
+        from comment_info ci
+        where  ci.article_id=#{id}
+    </select>
+
+    <select id="countCommentById" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*)from comment_info where article_id=#{id}
+    </select>
 
 </mapper>

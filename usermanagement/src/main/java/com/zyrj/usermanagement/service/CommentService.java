@@ -5,6 +5,7 @@ import com.zyrj.usermanagement.domain.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ import java.util.List;
 public class CommentService {
     @Autowired
     CommentMapper commentMapper;
+
     public void saveComment(Comment comment) {
 
         commentMapper.saveComment(comment);
@@ -31,5 +33,16 @@ public class CommentService {
 
     public void updateCommentById(Integer id) {
         commentMapper.updateCommentById(id);
+    }
+
+    public Integer findFloorById(Integer integer, Integer id) {
+        List<Comment> comments=commentMapper.findFloorById(id);
+        Integer floors=commentMapper.countCommentById(id);
+        for(Comment comment:comments){
+            if(comment.getCommentId()==integer){
+                return floors+1-comment.getFloor();
+            }
+        }
+        return 0;
     }
 }

@@ -171,18 +171,18 @@
                 var coAuthAndDateT=$("<p></p>").append("#"+floor+"&emsp;"+this.user.nickname+"&emsp;"+this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
             }
             var comment_textT;
-            var nickname;
+            var floor;
             if(parseInt(this.parent_id)>0){
                 $.ajax({
                    url:"comment/"+this.parent_id,
                    type:"GET",
+                   data:{article_id:id},
                    async:false,
                    success:function (result) {
-
-
+                       floor=result;
                    }
                 });
-                comment_textT=$("<article></article>").append("&emsp;&emsp;&emsp;").append("回复"+nickname).append("&emsp;").append(this.comment);
+                comment_textT=$("<article></article>").append("&emsp;&emsp;&emsp;").append("回复"+floor+"楼").append("&emsp;").append(this.comment);
             }else{
                 comment_textT=$("<article></article>").append("&emsp;&emsp;&emsp;").append(this.comment);
             }

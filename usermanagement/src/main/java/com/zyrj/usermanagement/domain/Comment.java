@@ -21,33 +21,12 @@ public class Comment {
     private Integer parent_id;
     private Integer agree;
     private User user;
-    public Integer getAgree() {
-        return agree;
-    }
-
-    public void setAgree(Integer agree) {
-        this.agree = agree;
-    }
-
-    public Integer getFloor() {
-        return floor;
-    }
-
-    public void setFloor(Integer floor) {
-        this.floor = floor;
-    }
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     @Override
     public String toString() {
         return "Comment{" +
-                "commentId=" + commentId +
+                "floor=" + floor +
+                ", commentId=" + commentId +
                 ", comment='" + comment + '\'' +
                 ", create_by='" + create_by + '\'' +
                 ", commentator=" + commentator +
@@ -56,6 +35,14 @@ public class Comment {
                 ", agree=" + agree +
                 ", user=" + user +
                 '}';
+    }
+
+    public Integer getFloor() {
+        return floor;
+    }
+
+    public void setFloor(Integer floor) {
+        this.floor = floor;
     }
 
     public Integer getCommentId() {
@@ -104,5 +91,21 @@ public class Comment {
 
     public void setParent_id(Integer parent_id) {
         this.parent_id = parent_id;
+    }
+
+    public Integer getAgree() {
+        return agree;
+    }
+
+    public void setAgree(Integer agree) {
+        this.agree = agree;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

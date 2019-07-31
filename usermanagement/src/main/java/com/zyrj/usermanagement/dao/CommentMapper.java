@@ -21,4 +21,8 @@ public interface CommentMapper {
     void deleteCommentById(Integer id);
 
     void updateCommentById(Integer id);
+
+    List<Comment> findFloorById(Integer id);
+
+    Integer countCommentById(Integer id);
 }
