@@ -1,12 +1,18 @@
 package com.zyrj.usermanagement;
 
+import com.zyrj.usermanagement.dao.ArticleMapper;
 import com.zyrj.usermanagement.dao.UserMapper;
+import com.zyrj.usermanagement.domain.Article;
 import com.zyrj.usermanagement.domain.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.Format;
@@ -21,6 +27,16 @@ public class UsermanagementApplicationTests {
 
 @Autowired
     UserMapper userMapper;
+@Autowired
+RedisTemplate redisTemplate;
+@Autowired
+RedisTemplate<Object, Article> redisTemplateArticle;
+@Autowired
+    ArticleMapper articleMapper;
+
+@Autowired
+StringRedisTemplate stringRedisTemplate;
+
     @Test
     public void contextLoads() throws ParseException {
         User user=new User();
@@ -43,5 +59,23 @@ SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
         }
 
     }
+
+
+@Test
+public void test01(){
+    Article article=articleMapper.findArticleById(5);
+    System.out.println(article);
+    redisTemplateArticle.opsForValue().set("article-01",article);
+    if(redisTemplateArticle.hasKey("article-01")){
+        System.out.println("1");
+    }else{
+        System.out.println("没有");
+    }
+
+}
+
+
+
+
 
 }

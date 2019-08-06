@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +48,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/checkName")
+    @RequestMapping(value = "/checkName",method = RequestMethod.GET)
     @ResponseBody
     public Msg checkName(@RequestParam("username")String username){
         String regx="^[a-zA-Z0-9_-]{6,16}$";
@@ -84,7 +86,9 @@ public class UserController {
     @RequestMapping(value = "user/{id}",method = RequestMethod.GET)
     @ResponseBody
     public Msg findUserById(@PathVariable("id")Integer id){
+
         User user= userService.findById(id);
+        System.out.println(user);
         return new Msg().add("user",user);
     }
 
@@ -116,27 +120,28 @@ public class UserController {
 *
 * 登陆
 * */
-    @RequestMapping(value = "/sign_in",method = RequestMethod.GET)
+    @RequestMapping(value = "/sign_in",method = RequestMethod.POST)
     @ResponseBody
-    public Msg login(@Valid User user){
+    public Msg login(@Valid User user, HttpServletRequest request){
+
         String username=user.getUsername();
         User u= userService.findByusername(username);
         if(u==null){
-
+            //用户不存在
             return new Msg().fail();
         }
         if(u.getPassword()==null){
-
+            //首次登陆设置密码
             return new Msg().add("login","1");
         }
         if(!u.getPassword().equals(sha1.encode(user.getPassword()))){
             return new Msg().fail();
         }else{
+            request.getSession().setAttribute("user",user);
+            System.out.println("登陆成功");
             return new Msg().success().add("userInfo",u);
         }
     }
-
-
 
 
 /*
@@ -144,7 +149,7 @@ public class UserController {
 * 首次登陆，设置密码
 * */
 
-    @RequestMapping(value = "/sign_in",method = RequestMethod.POST)
+    @RequestMapping(value = "/sign_in",method = RequestMethod.PUT)
     @ResponseBody
     public Msg setPassword(@Valid User user,@Valid String repassword){
         String regpassword="^[a-zA-Z0-9_-]{6,16}$";
@@ -160,6 +165,17 @@ public class UserController {
         return new Msg().fail();
     }
 
+
+    @RequestMapping(value = "/FogotcheckName",method = RequestMethod.GET)
+    @ResponseBody
+    public Msg FogotcheckName(@RequestParam("username")String username){
+        boolean b= userService.checkName(username);
+        if(b){
+            return new Msg().fail();
+        }else {
+            return new Msg().success();
+        }
+    }
 
 
 

@@ -1,10 +1,12 @@
 package com.zyrj.usermanagement.domain;
 
+import java.io.Serializable;
+
 /**
  * @auther ccm
  * @date 14:28
  */
-public class Article {
+public class Article implements Serializable {
 
     private Integer articleId;
     private String auther;

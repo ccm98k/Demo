@@ -7,7 +7,7 @@
     <link href="/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script src="/js/myjs.js"></script>
+   <!-- <script src="/js/myjs.js"></script>  -->
 </head>
 <body>
 
@@ -21,11 +21,11 @@
                 <div class="container-fluid">
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav pagechange" >
-                            <li class="active" id="home"><a href="#">Blog Home Page</a></li>
+                            <li class="active" id="home"><a href="#" style='cursor:pointer;' id="Home_Page">Blog Home Page</a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li id="perInfo"></li>
-                            <li><a>exit</a></li>
+                            <li><a href="exit">exit</a></li>
                         </ul>
                     </div>
                 </div>
@@ -34,17 +34,17 @@
         <div class="row contend">
             <div class="row">
                 <div class="col-md-2">
-                    <div class="row" style="padding: 50px 0 0 0">
+                    <div class="row" >
                         <div class="row col-md-8 col-md-offset-1">
-                            <input  class="form-control">
+                            <input  class="form-control" id="like_input">
                         </div>
                         <div class="col-md-offset-4">
-                            <button class="btn btn-default" >搜索</button>
+                            <button class="btn btn-default" id="like_btn">搜索</button>
                         </div>
                     </div>
                     <div class="divider" style="margin-top: 30px"><HR align=center color=#987cb9 SIZE=1></div>
-                    <div class="row col-md-12" style="margin: auto">
-                        <ul class="list-group" id="category_nev">
+                    <div class="row col-md-12" style="text-align: center;">
+                        <ul class="list-group" id="category_nev" style="padding: 30px">
                         </ul>
                     </div>
                 </div>
@@ -71,10 +71,13 @@
 
 <script type="text/javascript">
     var usernameT;
+    var cateId;
+    var like_search;
     $(function () {
-        navigation_load();
 
-        article_load(1);
+        navigation_load();
+        cateId=0;
+        article_load(1,cateId);
 
     });
 
@@ -87,11 +90,15 @@
         }
     }
 
-    function article_load(ele) {
+    function article_load(ele,cateId) {
         $.ajax({
             url:"api/article/list",
             type:"GET",
-            data:"pn="+ele,
+            data:{
+                pn:ele,
+                cateId:cateId,
+                like:like_search
+            },
             success:function (result) {
                 console.log(result);
                 article_load_content(result);
@@ -111,24 +118,117 @@
         });
     }
 
-    $("#perInfo").click(function () {
-        //进入自己的博客
-        if(usernameT){
-            window.location.href="Admin";
-        }else{
-            window.location.href="login";
+    function article_load_content(ele) {
+
+        $("#article_table tbody").empty();
+        var articles= ele.extend.Articles.list;
+        $.each(articles,function (index,item) {
+            var titleT= $("<h3></h3>").append(item.title);
+            var summaryT= $("<p></p>").append(item.summary);
+
+            var articleAllT=$("<a style=\"float: left;\" href=\"#\">阅读全文>></a>").addClass("articleAll") .attr("articleId",item.articleId);
+
+            var autherT=$(" <small style=\"float: right;\">作者：</small>").append(item.auther);
+
+            var dateT=$(" <small style=\"float: right;\">&nbsp;&nbsp;&nbsp;</small>").append(item.createTime);
+
+            var art_dateT=$("<div class=\"look\" style=\"width: 100%\"></div>").append(articleAllT).append(dateT).append(autherT);
+            var dividerT=$("<div class=\"divider\" style=\"margin-top: 30px\"><HR align=center color=#987cb9 SIZE=1></div>");
+            $("<div class=\"article\"></div>").append(titleT).append(summaryT).append(art_dateT).append(dividerT).appendTo("#article_table tbody");
+        });
+    }
+
+    function article_load_nav(result) {
+
+        $('#page_nav').empty();
+
+        if(result.extend.Articles.total==0){
+            $("#page_nav").append("<h3>暂无相关文章</h3>");
+        }else {
+            var url = $("<ul></ul>").addClass("pagination");
+
+            var firstpage = $("<li></li>").append($("<a></a>").attr("href", "#").append("首页"));
+
+            var prepage = $("<li></li>").append($("<a></a>").append("&laquo;"));
+
+            if (result.extend.Articles.isFirstPage) {
+                firstpage.addClass("disabled");
+                url.append(firstpage);
+            } else {
+                url.append(firstpage);
+                url.append(prepage);
+            }
+
+
+            $.each(result.extend.Articles.navigatepageNums, function (index, item) {
+                var page = $("<li></li>").append($("<a></a>").append(item));
+                if (result.extend.Articles.pageNum == item) {
+                    page.addClass("active");
+                }
+                page.click(function () {
+                    article_load(item, cateId);
+                });
+                url.append(page);
+            })
+            var nextpage = $("<li></li>").append($("<a></a>").append("&raquo;"));
+            var lastpage = $("<li></li>").append($("<a></a>").attr("href", "#").append("末页"));
+            if (result.extend.Articles.isLastPage) {
+                lastpage.addClass("disabled");
+
+            } else {
+                url.append(nextpage);
+            }
+            url.append(lastpage);
+            var nav = $("<nav></nav>").append(url);
+            nav.appendTo("#page_nav");
+
+            firstpage.click(function () {
+                article_load(result.extend.Articles.firstPage, cateId);
+            });
+            prepage.click(function () {
+                article_load(result.extend.Articles.prePage, cateId);
+            });
+
+            nextpage.click(function () {
+                article_load(result.extend.Articles.nextPage, cateId);
+            });
+            lastpage.click(function () {
+                article_load(result.extend.Articles.lastPage, cateId);
+            });
         }
+    }
+
+    function category_load(ele) {
+        $("#category_nev").empty();
+        $.each(ele,function (index,item) {
+            var categoryT= $("<li class=\"list-group-item category\"></li>").append($("<a style=\'cursor:pointer;\'></a>").append(item.categoryType)).attr("categoryId",item.categoryId);
+            categoryT.appendTo("#category_nev");
+        });
+    }
+    //进入自己的博客
+    $("#perInfo").click(function () {
+
+            window.location.href="Admin";
+
+    });
+    //博文详情
+    $(document).on("click",".articleAll",function () {
+            window.location.href="api/article?id="+$(this).attr("articleId");
+    });
+    //分类
+    $(document).on("click",".category",function () {
+        cateId=$(this).attr("categoryId");
+        article_load(1,cateId);
     });
 
+    $("#like_btn").click(function () {
+        cateId=-1;
+        like_search= $("#like_input").val();
+        article_load(1,cateId);
+    });
 
-    $(document).on("click",".articleAll",function () {
-
-        if(usernameT){
-            window.location.href="api/article?id="+$(this).attr("articleId");
-        }else{
-            alert("请登录后查看");
-            window.location.href="login";
-        }
+    $("#Home_Page").click(function () {
+        location.reload();
     });
 
 

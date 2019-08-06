@@ -35,6 +35,12 @@
          VALUES (#{username},#{password},#{nickname},#{birthday},#{gender},#{telephone},#{email},#{gradeId})
     </insert>
 
+
+    <insert id="register" parameterType="com.zyrj.usermanagement.domain.User" >
+        insert into user_info (user_name,user_password,email,grade_id)
+         VALUES (#{username},#{password},#{email},#{gradeId})
+    </insert>
+
     <select id="findById" parameterType="Integer" resultMap="WithMemberMap">
         select
         *
@@ -45,12 +51,23 @@
 
     <update id="updateUser" parameterType="com.zyrj.usermanagement.domain.User">
         update user_info
-        set
-        birthday=#{birthday},
-        user_gender=#{gender},
-        email=#{email},
-        telephone=#{telephone},
-        grade_id=#{gradeId}
+        <set>
+            <if test="birthday!=null">
+                birthday=#{birthday},
+            </if>
+            <if test="gender!=null">
+                user_gender=#{gender},
+            </if>
+            <if test="email!=null">
+                email=#{email},
+            </if>
+            <if test="telephone!=null">
+                telephone=#{telephone},
+            </if>
+            <if test="gradeId!=null">
+                grade_id=#{gradeId},
+            </if>
+        </set>
         where user_id = #{userId}
     </update>
 

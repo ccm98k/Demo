@@ -21,6 +21,7 @@ public class Comment {
     private Integer parent_id;
     private Integer agree;
     private User user;
+    private Article article;
 
     @Override
     public String toString() {

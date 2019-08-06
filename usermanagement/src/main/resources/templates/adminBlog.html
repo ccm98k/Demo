@@ -7,13 +7,71 @@
     <script src="/js/wangEditor.js"></script>
     <link href="/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/bootstrap-3.3.7-dist/css/contain.css" rel="stylesheet">
+    <link href="/datepicker/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-
+    <script src="/datepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 </head>
 
 <body>
-
+<div class="modal fade" id="updateuserModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">个人信息修改</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group ">
+                        <label  class="col-sm-2 control-label">账户</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static" id="username_update"></p>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">生日</label>
+                        <div class='col-sm-8'>
+                            <input type='text' class="form-control" name="birthday" id="birthday_update" />
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">联系方式</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="telephone" id="telephone_update" placeholder="11位手机号码">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="email" id="email_update" placeholder="email@xxx.com">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">性别</label>
+                        <div class="col-sm-8">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender_update1" value="M" checked="checked"> 男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender_update2" value="F"> 女
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="user_update_btn">更新</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div>
     <div class="col-md-12 container-fluid">
 
@@ -28,7 +86,7 @@
 
                         <ul class="nav navbar-nav navbar-right">
                             <li id="perInfo"></li>
-                            <li><a>exit</a></li>
+                            <li><a href="exit">exit</a></li>
                         </ul>
                     </div>
                 </div>
@@ -39,10 +97,10 @@
                 <div class="col-md-2">
                     <div class="row" style="padding: 50px 0 0 0">
                         <div class="row col-md-8 col-md-offset-1">
-                            <input  class="form-control">
+                            <input  class="form-control" id="like_input">
                         </div>
                         <div class="col-md-offset-4">
-                            <button class="btn btn-default" >搜索</button>
+                            <button class="btn btn-default" id="like_btn">搜索</button>
                         </div>
                     </div>
                     <div class="divider" style="margin-top: 30px"><HR align=center color=#987cb9 SIZE=1></div>
@@ -102,26 +160,40 @@
 
     var editor;
     var category;
+
+    var cateId;
+    var like_search;
     $(function () {
+
         $(".contend>div").eq(0).show().siblings().hide();
         get_category("#category_input");
         navigation_load();
 
-        article_load(1);
+        cateId=0;
+        article_load(1,cateId);
 
         var E = window.wangEditor;
         editor = new E('#editor');
         editor.create();
-
-
-
+        $('#birthday_update').datetimepicker({
+            language:"zh-CN",
+            format: 'yyyy-mm-dd',
+            minView:'month',
+            language: 'zh-CN',
+            endDate:new Date(),
+            autoclose:true,
+        });
     });
 
     function article_load(ele) {
         $.ajax({
             url:"Admin/articles",
             type:"GET",
-            data:"pn="+ele,
+            data:{
+                pn:ele,
+                cateId:cateId,
+                like:like_search
+            },
             success:function (result) {
                 console.log(result);
                 article_load_content(result);
@@ -150,65 +222,74 @@
     }
     function article_load_nav(result) {
 
+
+
         $('#page_nav').empty();
-        var url=$("<ul></ul>").addClass("pagination");
-
-        var firstpage=$("<li></li>").append($("<a></a>").attr("href","#").append("首页"));
-
-        var prepage=$("<li></li>").append($("<a></a>").append("&laquo;"));
-
-        if(result.extend.Articles.isFirstPage){
-            firstpage.addClass("disabled");
-            url.append(firstpage);
-        }else{
-            url.append(firstpage);
-            url.append(prepage);
-        }
 
 
-        $.each(result.extend.Articles.navigatepageNums,function (index,item) {
-            var page=$("<li></li>").append($("<a></a>").append(item));
-            if(result.extend.Articles.pageNum==item){
-                page.addClass("active");
+        if(result.extend.Articles.total==0){
+            $("#page_nav").append("<h3>暂未发布相关文章</h3>");
+        }else {
+            var url = $("<ul></ul>").addClass("pagination");
+
+            var firstpage = $("<li></li>").append($("<a></a>").attr("href", "#").append("首页"));
+
+            var prepage = $("<li></li>").append($("<a></a>").append("&laquo;"));
+
+            if (result.extend.Articles.isFirstPage) {
+                firstpage.addClass("disabled");
+                url.append(firstpage);
+            } else {
+                url.append(firstpage);
+                url.append(prepage);
             }
-            page.click(function () {
-                article_load(item);
+
+
+            $.each(result.extend.Articles.navigatepageNums, function (index, item) {
+                var page = $("<li></li>").append($("<a></a>").append(item));
+                if (result.extend.Articles.pageNum == item) {
+                    page.addClass("active");
+                }
+                page.click(function () {
+                    article_load(item);
+                });
+                url.append(page);
+            })
+            var nextpage = $("<li></li>").append($("<a></a>").append("&raquo;"));
+            var lastpage = $("<li></li>").append($("<a></a>").attr("href", "#").append("末页"));
+            if (result.extend.Articles.isLastPage) {
+                lastpage.addClass("disabled");
+
+            } else {
+                url.append(nextpage);
+            }
+            url.append(lastpage);
+            var nav = $("<nav></nav>").append(url);
+            nav.appendTo("#page_nav");
+
+            firstpage.click(function () {
+                article_load(result.extend.Articles.firstPage);
             });
-            url.append(page);
-        })
-        var nextpage=$("<li></li>").append($("<a></a>").append("&raquo;"));
-        var lastpage=$("<li></li>").append($("<a></a>").attr("href","#").append("末页"));
-        if(result.extend.Articles.isLastPage){
-            lastpage.addClass("disabled");
+            prepage.click(function () {
+                article_load(result.extend.Articles.prePage);
+            });
 
-        }else{
-            url.append(nextpage);
+            nextpage.click(function () {
+                article_load(result.extend.Articles.nextPage);
+            });
+            lastpage.click(function () {
+                article_load(result.extend.Articles.lastPage);
+            });
         }
-        url.append(lastpage);
-        var nav=$("<nav></nav>").append(url);
-        nav.appendTo("#page_nav");
-
-        firstpage.click(function () {
-            article_load(result.extend.Articles.firstPage);
-        });
-        prepage.click(function () {
-            article_load(result.extend.Articles.prePage);
-        });
-
-        nextpage.click(function () {
-            article_load(result.extend.Articles.nextPage);
-        });
-        lastpage.click(function () {
-            article_load(result.extend.Articles.lastPage);
-        });
     }
 
     function category_load(ele) {
         $("#category_nev").empty();
         $.each(ele,function (index,item) {
-            var categoryT= $("<li class=\"list-group-item\"></li>").append($("<a></a>").append(item.categoryType)).attr("categoryId",item.categoryId);
+            var categoryT= $("<li class=\"list-group-item\"></li>").append($("<a style=\'cursor:pointer;\'></a>").append(item.categoryType)).attr("categoryId",item.categoryId);
             categoryT.click(function () {
-
+                cateId=$(this).attr("categoryId");
+                article_load(1,cateId);
             });
             categoryT.appendTo("#category_nev");
         });
@@ -233,10 +314,7 @@
         $("<a></a>").append($.cookie('username')).appendTo("#perInfo");
     }
 
-    $("#perInfo").click(function () {
-        alert("123");
-        //这里可以修改自己的信息
-    });
+
 
     $(".pagechange>li").click(function () {
         $(this).addClass("active").siblings().removeClass("active");
@@ -246,7 +324,6 @@
 
     //发表博客
     $("#blog_release").click(function () {
-
         $.ajax({
             url:"Admin/article",
             type:"POST",
@@ -263,25 +340,108 @@
             }
         });
     });
-
-
-
-    $(document).on("click",".articleAll",function () {
-
-        window.location.href="Admin/articles?id="+$(this).attr("articleId");
-
+    $("#like_btn").click(function () {
+        cateId=-1;
+        like_search= $("#like_input").val();
+        article_load(1,cateId);
     });
 
+    $(document).on("click",".articleAll",function () {
+        window.location.href="Admin/article?id="+$(this).attr("articleId");
+    });
+
+//修改用户信息
+    $("#perInfo").click(function () {
+
+        get_members("#depts_update");
+        getUser($.cookie('userid'));
+        $("#user_update_btn").attr("edit-id",$.cookie('userid'));
+        $("#updateuserModel").modal({
+            backdrop:"static",
+        });
+    });
+
+    function get_members(ele){
+        $(ele).empty();
+        $.ajax({
+            url:"members",
+            type:"GET",
+            success:function(result) {
+                $.each(result.extend.members,function () {
+                    var optionT=$("<option></option>").append(this.memberType).attr("value",this.gradeId);
+                    optionT.appendTo(ele);
+                });
+            }
+        });
+    }
+
+    function getUser(id) {
+        $.ajax({
+            url:"user/"+id,
+            type:"GET",
+            success:function (result) {
+                var userdata=result.extend.user;
+
+                $("#username_update").text(userdata.username);
+                if(userdata.birthday!=null){
+                    $("#birthday_update").val(userdata.birthday.substring(0,10));
+                }
+                if(userdata.telephone!=null)
+                $("#telephone_update").val(userdata.telephone);
+                if(userdata.email!=null)
+                $("#email_update").val(userdata.email);
+                if(userdata.gender!=null)
+                $("#updateuserModel input[type=radio]").val([userdata.gender]);
+            }
+        })
+    }
+
+    function show_validata_msg(ele,status,msg){
+        $(ele).parent().remove("has-success has-error");
+        $(ele).next("span").text("");
+        if("success"==status){
+            $(ele).parent().addClass("has-success");
+            $(ele).next("span").text(msg);
+        }else{
+            $(ele).parent().addClass("has-error");
+            $(ele).next("span").text(msg);
+        }
+    }
+
+    $("#user_update_btn").click(function () {
+        var telephone=$("#telephone_update").val();
+        var regtelephone=/^1[3456789]\d{9}$/;
+        if(!regtelephone.test(telephone)){
+            show_validata_msg("#telephone_update","error","手机格式不正确");
+            return false;
+        }else{
+            show_validata_msg("#telephone_update","success","");
+        }
+        var Email=$("#email_update").val();
+        var regEmail=/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+        if(!regEmail.test(Email)){
+            show_validata_msg("#email_update","error","邮箱格式不正确");
+            return false;
+        }else{
+            show_validata_msg("#email_update","success","");
+        }
+
+        $.ajax({
+            url:"user/"+$(this).attr("edit-id"),
+            type:"PUT",
+            data:$("#updateuserModel form").serialize(),
+            success:function (result) {
+                $("#updateuserModel").modal("hide");
+            }
+        });
+    });
+
+    $("#exit").click(function () {
+        window.location.href="exit";
+    })
 
 
-
-
-    
-    
 </script>
-
-
-
 
 
 </body>

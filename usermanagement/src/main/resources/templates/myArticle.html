@@ -12,7 +12,6 @@
     <style>
         #btn_submit{
             float: right;
-
         }
         #box{
             width: 99%;
@@ -27,10 +26,6 @@
 </head>
 <body>
 
-
-
-
-
 <div>
     <div class="col-md-12 container-fluid">
         <div class="row">
@@ -38,9 +33,9 @@
                 <div class="container-fluid">
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav" >
-                            <li  id="home"><a href="#">Blog Home Page</a></li>
-                            <li ><a href="#" >Blog Detail</a></li>
+                        <li class="active" id="home"><a href="#">Blog Detail</a></li>
                         </ul>
+
                         <ul class="nav navbar-nav navbar-right">
                             <li id="perInfo"></li>
                             <li><a href="exit">exit</a></li>
@@ -93,7 +88,6 @@
 <script type="text/javascript">
 
     var id;
-    var auther_name;
     var current_comment=1;
     $(function () {
         navigation_load();
@@ -117,7 +111,6 @@
         $.ajax({
             url:"article/"+ele,
             type:"GET",
-            async:false,
             success:function (result) {
                 article_load_content(result.extend.article);
             }
@@ -126,8 +119,6 @@
     }
 
     function article_load_content(ele){
-        auther_name=ele.auther;
-
         var titleT=$("<h1></h1>").addClass("titleId").append(ele.title);
         $("#title_div").append(titleT);
         titleT.attr("articleId",ele.articleId);
@@ -169,22 +160,14 @@
                 var deleteT=$("<a style=\'cursor:pointer;\'></a>").append("删除").addClass("delete_a");
                 deleteT.attr("comment_id",this.commentId);
                 var agreeT=$("<text></text>").append("赞").append("("+this.agree+")");
-                if(this.user.username==auther_name){
-                    var coAuthAndDateT=$("<p></p>").append("#"+floor+"&emsp;"+this.user.username+"<small style=\"color:red\">(作者)</small>"+"&emsp;"+this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
-                }else{
-                    var coAuthAndDateT=$("<p></p>").append("#"+floor+"&emsp;"+this.user.username+"&emsp;"+this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
-                }
-            }else {
-                var deleteT = $("<text></text>").append("删除");
-                var agreeT = $("<a style=\'cursor:pointer;\'></a>").addClass("agree_a").append("赞").append("(" + this.agree + ")");
-                agreeT.attr("comment_id", this.commentId);
 
+                var coAuthAndDateT=$("<p></p>").append("#"+floor+"&emsp;"+this.user.nickname+"&emsp;"+this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
+            }else{
+                var deleteT=$("<text></text>").append("删除");
+                var agreeT=$("<a style=\'cursor:pointer;\'></a>").addClass("agree_a").append("赞").append("("+this.agree+")");
+                agreeT.attr("comment_id",this.commentId);
 
-                if (this.user.username == auther_name) {
-                    var coAuthAndDateT = $("<p></p>").append("#" + floor + "&emsp;" + this.user.username+"<small  style=\"color:red\">(作者)</small>"+"&emsp;" + this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
-                } else {
-                    var coAuthAndDateT = $("<p></p>").append("#" + floor + "&emsp;" + this.user.username + "&emsp;" + this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
-                }
+                var coAuthAndDateT=$("<p></p>").append("#"+floor+"&emsp;"+this.user.nickname+"&emsp;"+this.create_by).append("&emsp;&emsp;").append(agreeT).append("&emsp;&emsp;").append(deleteT);
             }
 
             var cooT=$("<a style=\'cursor:pointer;\'></a>").append("评论").addClass("comm_a");
@@ -331,12 +314,6 @@
            }
         });
     });
-
-    $("#home").click(function () {
-        window.history.back(-1);
-    });
-
-
 
 
 </script>

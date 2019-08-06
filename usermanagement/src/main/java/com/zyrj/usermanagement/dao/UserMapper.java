@@ -31,4 +31,6 @@ public interface UserMapper {
     User findByusername(String username);
 
     void savePassword(User user);
+
+    void register(User user);
 }

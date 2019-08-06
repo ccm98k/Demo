@@ -41,6 +41,22 @@
         FROM article_info where auther='${value}' ORDER BY create_by DESC
     </select>
 
+    <select id="findArticleByAuLike" parameterType="java.lang.String" resultMap="WithContentCategoryMap">
+        select
+        *
+        FROM article_info where auther='${au}' and title LIKE '%${str}%' ORDER BY create_by DESC
+    </select>
+
+
+    <select id="findArticleByAuId" resultMap="WithContentCategoryMap">
+        select
+        *
+        FROM article_info where auther='${au}' and category_id=#{ca} ORDER BY create_by DESC
+    </select>
+
+
+
+
     <select id="findAllArticle" resultMap="WithContentCategoryMap">
         select
         *
@@ -51,6 +67,18 @@
         select
         ai.*,ac.*
         FROM article_info ai,article_content ac where ai.id=ac.article_id and ai.id=#{id}
+    </select>
+
+    <select id="findAllArticleByCateId" parameterType="java.lang.Integer" resultMap="WithContentCategoryMap">
+        select
+        *
+        FROM article_info where category_id=#{id} ORDER BY create_by DESC
+    </select>
+
+    <select id="findAllArticleLike" parameterType="java.lang.String" resultMap="WithContentCategoryMap">
+        select
+        *
+        from article_info where title LIKE '%${str}%' ORDER BY create_by DESC
     </select>
 
 

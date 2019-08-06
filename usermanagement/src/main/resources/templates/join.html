@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+    <link href="/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+</head>
+<body>
+
+
+<div style="width: 300px;margin:120px auto" id="setPassword">
+    <div style="padding: 10px 20px;">
+        <h1 style="text-align: center">Create Account</h1>
+    </div>
+    <div style="padding: 20px 0px 0px 0px ;border: 1px solid #d8dee2;font-size: 14px;padding: 20px;border-top: 1px solid #d8dee3;border-radius: 5px;">
+        <form>
+            <div class="form-group">
+                <label for="Username">Username</label>
+                <input type="username" class="form-control" id="Username" name="username" placeholder="Username">
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <label for="password">Password：</label>
+                <input type="password" class="form-control" id="password" name="password" >
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <label for="email">Email：</label>
+                <input type="email" class="form-control" id="email" >
+                <span class="help-block"></span>
+            </div>
+            <button type="button" id="submit_btn" class="btn btn-primary btn-block">Create an Account</button>
+        </form>
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript">
+
+
+    function show_validata_msg(ele,status,msg){
+        $(ele).parent().remove("has-success has-error");
+        $(ele).next("span").text("");
+        if("success"==status){
+            $(ele).parent().addClass("has-success");
+            $(ele).next("span").text(msg);
+        }else{
+            $(ele).parent().addClass("has-error");
+            $(ele).next("span").text(msg);
+        }
+    }
+
+    $("#Username").change(function () {
+        var username= $("#Username").val();
+        var regName=/^[a-zA-Z0-9_-]{6,16}$/;
+        if(!regName.test(username)){
+            show_validata_msg("#Username","error","用户名为6-16位字母或数字");
+            return false;
+        }else{
+            $.ajax({
+                url:"checkName",
+                type:"GET",
+                data:{username:username},
+                success:function (result) {
+                    if(result.code==100){
+                        show_validata_msg("#Username","success","用户名可用");
+                        $("#submit_btn").attr("ajax-va","success");
+                    }else{
+                        show_validata_msg("#Username","error","用户名已存在");
+                        $("#submit_btn").attr("ajax-va","error");
+                    }
+                }
+            });
+        }
+    });
+
+
+    $("#password").change(function () {
+        var password= $("#password").val();
+        var regpassword=/^[a-zA-Z0-9_-]{6,16}$/;
+        if(!regpassword.test(password)){
+            show_validata_msg("#password","error","密码为6-16位字母或数字");
+        }else{
+            show_validata_msg("#password","success","");
+        }
+    });
+
+    $("#email").change(function () {
+        var email= $("#email").val();
+        var regemail=/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+        if(!regemail.test(email)){
+            show_validata_msg("#email","error","邮箱格式不正确");
+        }else{
+            show_validata_msg("#email","success","");
+        }
+    });
+
+
+    $("#submit_btn").click(function () {
+        if($(this).attr("ajax-va")=="error"){
+            return false;
+        }
+
+        var username=$("#Username").val();
+        var regusername=/^[a-zA-Z0-9_-]{6,16}$/;
+        var password=$("#password").val();
+        var regpassword=/^[a-zA-Z0-9_-]{6,16}$/;
+        var email=$("#email").val();
+        var regemail=/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+
+        if(!regusername.test(username)||!regpassword.test(password)||!regemail.test(email)){
+            return false;
+        }else{
+            $.ajax({
+                url:"api/user",
+                type:"POST",
+                data:{
+                    username:username,
+                    password:password,
+                    email:email
+                },
+                    success:function (result) {
+                        window.location.href="login";
+                        alert("账号注册成功！");
+                }
+            });
+        }
+    });
+
+
+
+</script>
+
+
+</html>

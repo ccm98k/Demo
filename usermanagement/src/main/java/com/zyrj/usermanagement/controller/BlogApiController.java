@@ -9,6 +9,7 @@ import com.zyrj.usermanagement.service.CategoryService;
 import com.zyrj.usermanagement.service.CommentService;
 import com.zyrj.usermanagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -35,24 +36,60 @@ public class BlogApiController {
     CategoryService categoryService;
     @Autowired
     CommentService commentService;
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
 
     @RequestMapping(value = "article/list",method = RequestMethod.GET)
     @ResponseBody
-    public Msg  findAllArticle(@RequestParam(value = "pn",defaultValue = "1")Integer pn){
-        PageHelper.startPage(pn,6);
-        List<Article> articles = articleService.findAllArticle();
+    public Msg  findAllArticle(@RequestParam(value = "pn",defaultValue = "1")Integer pn,@RequestParam(value = "cateId",defaultValue = "0")Integer cateId,String like){
+        if(cateId==0){
+            PageHelper.startPage(pn,6);
+            List<Article> articles = articleService.findAllArticle();
 
-        PageInfo page=new PageInfo(articles,3);
-        int maxpage=page.getPages();
-        if(pn<=maxpage){
-            return new Msg().success().add("Articles",page);
+            PageInfo page=new PageInfo(articles,3);
+            int maxpage=page.getPages();
+            if(pn<=maxpage){
+                return new Msg().success().add("Articles",page);
+            }else{
+                PageHelper.startPage(maxpage,6);
+                articles=articleService.findAllArticle();
+                page=new PageInfo(articles,3);
+                return new Msg().success().add("Articles",page);
+            }
+        }else if(cateId==-1){
+            PageHelper.startPage(pn,6);
+            List<Article> articles = articleService.findAllArticleLike(like);
+
+            PageInfo page=new PageInfo(articles,3);
+            int maxpage=page.getPages();
+            if(pn<=maxpage){
+                return new Msg().success().add("Articles",page);
+            }else{
+                PageHelper.startPage(maxpage,6);
+                articles=articleService.findAllArticleLike(like);
+                page=new PageInfo(articles,3);
+                return new Msg().success().add("Articles",page);
+            }
         }else{
-            PageHelper.startPage(maxpage,6);
-            articles=articleService.findAllArticle();
-            page=new PageInfo(articles,3);
-            return new Msg().success().add("Articles",page);
+            PageHelper.startPage(pn,6);
+            List<Article> articles = articleService.findAllArticleByCateId(cateId);
+
+            PageInfo page=new PageInfo(articles,3);
+            int maxpage=page.getPages();
+            if(pn<=maxpage){
+                return new Msg().success().add("Articles",page);
+            }else{
+                PageHelper.startPage(maxpage,6);
+                articles=articleService.findAllArticleByCateId(cateId);
+                page=new PageInfo(articles,3);
+                return new Msg().success().add("Articles",page);
+            }
         }
+
     }
 
     @RequestMapping(value = "category",method = RequestMethod.GET)
@@ -127,9 +164,24 @@ public class BlogApiController {
     @ResponseBody
     public Integer findFloorById(@PathVariable("id")Integer id,Integer article_id){
 
-
         return commentService.findFloorById(id,article_id);
     }
 
+
+    @RequestMapping(value = "user",method = RequestMethod.PUT)
+    @ResponseBody
+    public Msg updatePassword(User user){
+        userService.savePassword(user);
+        return new Msg().success();
+    }
+    @RequestMapping(value = "user",method = RequestMethod.POST)
+    @ResponseBody
+    public Msg register(User user){
+
+        user.setGradeId(1);
+
+        userService.register(user);
+        return new Msg().success();
+    }
 
 }
