@@ -49,6 +49,7 @@ public class UserService {
     }
     @Cacheable(value = "User",key = "#p0")
     public User findByusername(String username) {
+        System.out.println(userMapper.findByusername(username));
         return userMapper.findByusername(username);
     }
     @CacheEvict(value ={"Users","user"},allEntries = true)

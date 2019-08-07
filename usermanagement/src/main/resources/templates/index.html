@@ -142,7 +142,7 @@
 
         $('#page_nav').empty();
 
-        if(result.extend.Articles.total==0){
+        if(result.extend.Articles.list.length==0){
             $("#page_nav").append("<h3>暂无相关文章</h3>");
         }else {
             var url = $("<ul></ul>").addClass("pagination");

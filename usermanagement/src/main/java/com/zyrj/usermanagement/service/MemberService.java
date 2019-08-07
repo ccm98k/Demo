@@ -17,7 +17,7 @@ public class MemberService {
 
     @Autowired
     MemberMapper memberMapper;
-    @Cacheable(value = "Member",key = "#p0")
+    @Cacheable(value = "Member")
     public List<Member> selectAllMember(){
         return memberMapper.selectAllMember();
     }

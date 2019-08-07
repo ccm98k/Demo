@@ -203,7 +203,7 @@
 
         var prepage=$("<li></li>").append($("<a></a>").append("&laquo;"));
 
-        if(ele.isFirstPage){
+        if(!ele.hasPreviousPage){
             prepage.addClass("disabled");
 
         }else {
@@ -213,7 +213,7 @@
 
         var nextpage=$("<li></li>").append($("<a></a>").append("&raquo;"));
 
-        if(ele.isLastPage){
+        if(!ele.hasNextPage){
             nextpage.addClass("disabled");
         }else{
             url.append(nextpage);

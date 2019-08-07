@@ -18,21 +18,21 @@ import java.util.List;
 public class CommentService {
     @Autowired
     CommentMapper commentMapper;
-    @CacheEvict(value ="CommentsByArticleId",allEntries = true)
+
     public void saveComment(Comment comment) {
 
         commentMapper.saveComment(comment);
 
     }
-    @Cacheable(value = "CommentsByArticleId",key = "#p0")
+
     public List<Comment> findComments(Integer id) {
         return commentMapper.findComments(id);
     }
-    @CacheEvict(value ="CommentsByArticleId",allEntries = true)
+
     public void deleteCommentById(Integer id) {
         commentMapper.deleteCommentById(id);
     }
-    @CacheEvict(value ="CommentsByArticleId",allEntries = true)
+
     public void updateCommentById(Integer id) {
         commentMapper.updateCommentById(id);
     }

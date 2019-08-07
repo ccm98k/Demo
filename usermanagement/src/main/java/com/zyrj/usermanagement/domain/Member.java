@@ -1,10 +1,12 @@
 package com.zyrj.usermanagement.domain;
 
+import java.io.Serializable;
+
 /**
  * @auther ccm
  * @date 16:27
  */
-public class Member {
+public class Member implements Serializable {
     private Integer gradeId;
     private String memberType;
 

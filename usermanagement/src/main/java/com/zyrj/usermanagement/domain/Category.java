@@ -1,10 +1,12 @@
 package com.zyrj.usermanagement.domain;
 
+import java.io.Serializable;
+
 /**
  * @auther ccm
  * @date 10:03
  */
-public class Category {
+public class Category implements Serializable {
     private Integer categoryId;
     private String categoryType;
 

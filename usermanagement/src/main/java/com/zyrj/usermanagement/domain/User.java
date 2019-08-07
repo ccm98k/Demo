@@ -2,13 +2,14 @@ package com.zyrj.usermanagement.domain;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @auther ccm
  * @date 16:17
  */
-public class User {
+public class User implements Serializable {
     private Integer userId;
     @Pattern(regexp="^[a-zA-Z0-9_-]{6,16}$"
             ,message = "用户名必须为6-16位字母或数字！！！")

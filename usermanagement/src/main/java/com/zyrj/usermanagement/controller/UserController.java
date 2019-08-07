@@ -125,7 +125,9 @@ public class UserController {
     public Msg login(@Valid User user, HttpServletRequest request){
 
         String username=user.getUsername();
+
         User u= userService.findByusername(username);
+
         if(u==null){
             //用户不存在
             return new Msg().fail();

@@ -1,6 +1,7 @@
 package com.zyrj.usermanagement.domain;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  * @auther ccm
  * @date 14:47
  */
-public class Comment {
+public class Comment implements Serializable {
 
 
     private Integer floor;

@@ -22,7 +22,7 @@ public class ArticleService {
     @Autowired
     ArticleMapper articleMapper;
 
-@CacheEvict(value ={"Articles","ArticlesByCateId"},allEntries = true)
+
     public void saveArticle(Article article, ArticleContent articleContent) {
         articleMapper.saveArticle(article);
         articleContent.setArticleId(article.getArticleId());
@@ -31,10 +31,9 @@ public class ArticleService {
 
     @Cacheable(value = "Articles",key = "#p0")
     public List<Article> findArticle(String auther) {
-        System.out.println("jinlaile");
         return articleMapper.findArticle(auther);
     }
-    @Cacheable(value = "Articles")
+
     public List<Article> findAllArticle() {
         return articleMapper.findAllArticle();
     }
@@ -43,20 +42,22 @@ public class ArticleService {
     public Article findArticleById(Integer id) {
         return articleMapper.findArticleById(id);
     }
-    @Cacheable(value = "ArticlesByCateId",key = "#p0")
+
+
     public List<Article> findAllArticleByCateId(Integer cateId) {
         return articleMapper.findAllArticleByCateId(cateId);
     }
-    @Cacheable(value = "Articles",key = "#p0")
+
     public List<Article> findAllArticleLike(String like) {
         return articleMapper.findAllArticleLike(like);
     }
-    @Cacheable(value = "Articles",key = "#p0")
+
+    
     public List<Article> findArticleByAuLike(String auther, String like) {
         return articleMapper.findArticleByAuLike(auther,like);
 
     }
-    @Cacheable(value = "ArticlesByCateId",key = "#p0+#p1" )
+
     public List<Article> findArticleByAuId(String auther, Integer cateId) {
         return articleMapper.findArticleByAuId(auther,cateId);
     }
